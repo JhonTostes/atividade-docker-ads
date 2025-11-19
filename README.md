@@ -21,7 +21,7 @@ A aplicação permite:
 1.  Clone o repositório e entre na pasta:
     ```bash
     git clone https://github.com/JhonTostes/atividade-docker-ads.git
-    cd atividade-docker
+    cd atividade-docker-ads
     ```
 
 2.  Suba os containers (o build é automático):
