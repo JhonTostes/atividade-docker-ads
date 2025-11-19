@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Atividade Docker</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; text-align: center; }
+        input { padding: 10px; width: 70%; }
+        button { padding: 10px 20px; background: #007bff; color: #fff; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        ul { list-style: none; padding: 0; text-align: left; }
+        li { background: #f4f4f4; margin: 5px 0; padding: 10px; border-bottom: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Cadastro de Usuários</h1>
+    <div>
+        <input type="text" id="nameInput" placeholder="Digite um nome">
+        <button onclick="addUser()">Salvar</button>
+    </div>
+    <h3>Lista Atualizada</h3>
+    <ul id="user-list">Carregando...</ul>
+
+    <script>
+        // Aponta para a porta externa do Backend (definida no docker-compose)
+        const API_URL = 'http://localhost:4000/users';
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                const list = document.getElementById('user-list');
+                list.innerHTML = '';
+                data.forEach(user => {
+                    const li = document.createElement('li');
+                    li.textContent = `#${user.id} - ${user.name}`;
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                document.getElementById('user-list').textContent = 'Erro ao conectar na API.';
+            }
+        }
+
+        async function addUser() {
+            const name = document.getElementById('nameInput').value;
+            if (!name) return alert('Digite um nome!');
+
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            document.getElementById('nameInput').value = '';
+            loadUsers();
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Serviço 1: Banco de Dados
+  db:
+    image: postgres:15-alpine
+    container_name: db-container
+    restart: always
+    environment:
+      POSTGRES_USER: aluno
+      POSTGRES_PASSWORD: senha123
+      POSTGRES_DB: sistema_escolar
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Serviço 2: Backend
+  backend:
+    build: ./backend
+    container_name: backend-container
+    ports:
+      - "4000:3000" # Externa 4000 -> Interna 3000
+    environment:
+      - DB_HOST=db
+      - DB_USER=aluno
+      - DB_PASS=senha123
+      - DB_NAME=sistema_escolar
+    depends_on:
+      - db
+
+  # Serviço 3: Frontend
+  frontend:
+    build: ./frontend
+    container_name: frontend-container
+    ports:
+      - "3000:80" # Externa 3000 (requisito) -> Interna 80
+    depends_on:
+      - backend
+
+volumes:
+  pg_data:
